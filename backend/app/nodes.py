@@ -146,6 +146,10 @@ def planner(state: GraphState) -> Dict[str, Any]:
         3. Recent vs. historical information
         4. Specific focus areas within the topic
         
+        IMPORTANT CONSTRAINTS:
+        - expected_sources must be between 1 and 15 (maximum 15 sources)
+        - Choose appropriate number based on research depth (shallow: 3-5, moderate: 5-8, deep: 8-12)
+        
         Generate search queries that will yield diverse, high-quality sources."""
         
         # Use primary LLM for planning with structured output
@@ -173,11 +177,18 @@ def planner(state: GraphState) -> Dict[str, Any]:
             logger.info(f"Successfully created research plan with {len(plan.queries)} queries")
         except Exception as e:
             logger.warning(f"Structured LLM failed, using fallback plan: {e}")
-            # Fallback plan
+            # Fallback plan - ensure expected_sources respects the limit
+            depth_to_sources = {
+                "shallow": 3,
+                "moderate": 5,
+                "deep": 8
+            }
+            expected_sources = depth_to_sources.get(state['depth'], 5)
+            
             plan = ResearchPlan(
                 queries=[f"{state['topic']} research", f"{state['topic']} analysis", f"{state['topic']} trends"],
                 rationale="Basic search queries for the topic",
-                expected_sources=5,
+                expected_sources=expected_sources,
                 focus_areas=[state['topic']]
             )
         
@@ -283,9 +294,15 @@ def per_source_summarizer(state: GraphState) -> Dict[str, Any]:
         For each source:
         1. Extract the title and key information
         2. Summarize relevant content
-        3. Assess relevance to the topic (0.0-1.0)
+        3. Assess relevance to the topic (0.0-1.0 scale, where 0.0 = not relevant, 1.0 = highly relevant)
         4. Identify key points
         5. Note source type and metadata
+        
+        IMPORTANT CONSTRAINTS:
+        - relevance_score must be a float between 0.0 and 1.0 (inclusive)
+        - Use 0.0 for completely irrelevant sources
+        - Use 1.0 for highly relevant sources
+        - Use values in between for partial relevance
         
         Be objective and focus on factual information."""
         
@@ -373,10 +390,15 @@ def synthesizer(state: GraphState) -> Dict[str, Any]:
         multiple sources into a comprehensive research brief.
         
         Structure your response with:
-        1. Executive Summary: High-level overview of findings
+        1. Executive Summary: High-level overview of findings (minimum 50 characters)
         2. Detailed Synthesis: Organized analysis of the research
         3. Key Insights: Main conclusions and implications
         4. References: All sources used
+        
+        IMPORTANT CONSTRAINTS:
+        - executive_summary must be at least 50 characters long
+        - Be thorough, objective, and well-organized
+        - Ensure all sections are comprehensive and informative
         
         Be thorough, objective, and well-organized."""
         
