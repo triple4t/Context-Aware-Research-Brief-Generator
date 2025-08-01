@@ -8,7 +8,7 @@ The system includes comprehensive monitoring capabilities powered by LangSmith i
 
 - **Trace URLs**: Direct links to LangSmith traces for each execution
 - **Token Usage Tracking**: Real-time token consumption per operation
-- **Cost Estimation**: Google Generative AI pricing estimates
+- **Cost Estimation**: Azure OpenAI pricing estimates
 - **Execution Metrics**: Node-by-node performance tracking
 - **Error Monitoring**: Detailed error tracking and reporting
 
@@ -74,7 +74,7 @@ Real-time tracking of token consumption:
 
 ### Cost Estimation
 
-Automatic cost estimation based on Google Generative AI pricing:
+Automatic cost estimation based on Azure OpenAI pricing:
 
 - Input tokens: $0.005 per 1K tokens
 - Output tokens: $0.015 per 1K tokens
@@ -173,7 +173,7 @@ Monitoring Status
 │ Endpoint            │ https://api.smith.langchain.com   │
 │ Trace URLs          │ ✅ Available│                       │
 │ Token Tracking      │ ✅ Available│ Real-time token usage │
-│ Cost Estimation     │ ✅ Available│ Google Generative AI pricing  │
+│ Cost Estimation     │ ✅ Available│ Azure OpenAI pricing  │
 │ Execution Metrics   │ ✅ Available│ Node execution times  │
 └─────────────────────┴──────────┴─────────────────────────┘
 ```
@@ -229,7 +229,7 @@ If trace URLs are not appearing:
 If token usage is not tracked:
 
 1. Check if LLM responses include usage information
-2. Verify Google Generative AI configuration
+2. Verify Azure OpenAI configuration
 3. Check logs for extraction errors
 
 ## Best Practices

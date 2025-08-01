@@ -63,7 +63,7 @@ async def startup_event():
         logger.info("LangSmith API key: Not configured")
     
     logger.info(f"LangSmith project: {settings.LANGCHAIN_PROJECT}")
-    logger.info(f"Google API Key: {'Configured' if settings.GOOGLE_API_KEY else 'Not configured'}")
+    logger.info(f"Azure OpenAI API Key: {'Configured' if settings.AZURE_OPENAI_API_KEY else 'Not configured'}")
     logger.info(f"Database: SQLite ({settings.DATABASE_URL})")
 
 
@@ -71,11 +71,11 @@ async def startup_event():
 async def root():
     """Root endpoint with API information."""
     return {
-        "message": "Context-Aware Research Brief Generator API (Google Generative AI)",
+        "message": "Context-Aware Research Brief Generator API (Azure OpenAI)",
         "version": "1.0.0",
         "status": "running",
         "environment": settings.ENVIRONMENT,
-        "llm_provider": "Google Generative AI",
+        "llm_provider": "Azure OpenAI",
         "storage": "SQLite",
         "docs": "/docs"
     }
@@ -90,7 +90,7 @@ async def health_check():
         "status": "healthy",
         "timestamp": datetime.utcnow().isoformat(),
         "environment": settings.ENVIRONMENT,
-        "llm_provider": "Google Generative AI",
+        "llm_provider": "Azure OpenAI",
         "storage": "SQLite",
         "langsmith": {
             "enabled": metrics_collector.langsmith_manager.is_enabled,
@@ -104,7 +104,7 @@ async def health_check():
 @app.post("/brief", response_model=BriefResponse)
 async def generate_brief(request: BriefRequest, background_tasks: BackgroundTasks):
     """
-    Generate a research brief for the given topic using Google Generative AI.
+    Generate a research brief for the given topic using Azure OpenAI.
     
     This endpoint orchestrates the entire research brief generation process
     using LangGraph with context-aware processing for follow-up queries.
@@ -137,7 +137,7 @@ async def generate_brief(request: BriefRequest, background_tasks: BackgroundTask
                 "trace_id": trace_id,
                 "start_time": start_time,
                 "request_id": str(uuid.uuid4()),
-                "llm_provider": "Google Generative AI"
+                "llm_provider": "Azure OpenAI"
             }
         }
         
@@ -359,12 +359,12 @@ async def get_available_models():
     return {
         "primary_model": {
             "name": settings.PRIMARY_MODEL,
-            "provider": "Google Generative AI",
+            "provider": "Azure OpenAI",
             "purpose": "Complex reasoning and synthesis"
         },
         "secondary_model": {
             "name": settings.SECONDARY_MODEL,
-            "provider": "Google Generative AI",
+            "provider": "Azure OpenAI",
             "purpose": "Fast summarization and context processing"
         },
         "search_tool": {
@@ -386,8 +386,8 @@ async def get_configuration():
         "environment": settings.ENVIRONMENT,
         "langsmith_enabled": settings.LANGCHAIN_TRACING_V2,
         "langsmith_configured": bool(settings.LANGSMITH_API_KEY or settings.LANGCHAIN_API_KEY),
-        "llm_provider": "Google Generative AI",
-        "google_api_key_configured": bool(settings.GOOGLE_API_KEY),
+        "llm_provider": "Azure OpenAI",
+        "azure_openai_api_key_configured": bool(settings.AZURE_OPENAI_API_KEY),
         "storage": "SQLite",
         "database_url": settings.DATABASE_URL,
         "max_sources_per_query": settings.MAX_SOURCES_PER_QUERY,

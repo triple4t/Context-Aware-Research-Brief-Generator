@@ -1,6 +1,6 @@
-# Context-Aware Research Brief Generator (Google Generative AI)
+# Context-Aware Research Brief Generator (Azure OpenAI)
 
-A production-grade research assistant system that generates structured, evidence-linked research briefs using LangGraph and LangChain with Google Generative AI. The system supports follow-up queries by summarizing prior user interactions and incorporating this context into subsequent outputs.
+A production-grade research assistant system that generates structured, evidence-linked research briefs using LangGraph and LangChain with Azure OpenAI. The system supports follow-up queries by summarizing prior user interactions and incorporating this context into subsequent outputs.
 
 ## 🎯 Problem Statement and Objective
 
@@ -10,7 +10,7 @@ Traditional research tools often lack context awareness and produce isolated res
 - **Structured Outputs**: All outputs follow strict schemas with validation
 - **Modular Architecture**: Uses LangGraph for orchestration with distinct processing nodes
 - **Production Ready**: Includes API, CLI, testing, monitoring, and deployment capabilities
-- **Google Generative AI Integration**: Uses the latest LangChain v0.3+ with Google Generative AI API
+- **Azure OpenAI Integration**: Uses the latest LangChain v0.3+ with Azure OpenAI API
 - **Simple Storage**: Uses SQLite for data persistence without external dependencies
 
 ## 🏗️ Architecture
@@ -47,8 +47,8 @@ graph TD
 
 ### LLM Strategy
 
-- **Google Generative AI (Gemini)**: Used for all reasoning tasks including planning, summarization, and synthesis
-- **Dual Model Approach**: Uses Gemini Pro for complex tasks and Gemini Flash for faster operations
+- **Azure OpenAI (GPT-4)**: Used for all reasoning tasks including planning, summarization, and synthesis
+- **Dual Model Approach**: Uses GPT-4 for complex tasks and GPT-4 for faster operations
 
 ### Tools
 
@@ -90,7 +90,7 @@ class FinalBrief(BaseModel):
 ### Prerequisites
 
 - Python 3.11+
-- Google Generative AI API access
+- Azure OpenAI API access
 - Tavily API key
 
 ### Installation
@@ -109,7 +109,7 @@ class FinalBrief(BaseModel):
 3. **Set up environment variables**:
    ```bash
    cp env.example .env
-   # Edit .env with your Google Generative AI credentials
+   # Edit .env with your Azure OpenAI credentials
    ```
 
 4. **Run tests**:
@@ -120,8 +120,11 @@ class FinalBrief(BaseModel):
 ### Environment Variables
 
 ```bash
-# Google Generative AI Configuration
-GOOGLE_API_KEY=your-google-api-key
+# Azure OpenAI Configuration
+AZURE_OPENAI_API_KEY=your-azure-openai-api-key
+AZURE_OPENAI_ENDPOINT=https://your-resource.openai.azure.com/
+AZURE_OPENAI_API_VERSION=2024-02-15-preview
+AZURE_OPENAI_LLM_DEPLOYMENT_NAME=your-deployment-name
 
 # Search Tool
 TAVILY_API_KEY=tvly-...
@@ -184,7 +187,7 @@ docker run -p 8000:8000 --env-file .env research-brief
 
 ### POST /brief
 
-Generate a research brief using Google Generative AI.
+Generate a research brief using Azure OpenAI.
 
 **Request Body**:
 ```json
@@ -227,7 +230,7 @@ Health check endpoint.
 
 ### GET /models
 
-Get information about available models (Google Generative AI).
+Get information about available models (Azure OpenAI).
 
 ## 🧪 Testing
 
@@ -280,7 +283,7 @@ The system integrates with LangSmith for comprehensive tracing and monitoring:
 
 - **Trace URLs**: Direct links to LangSmith traces for each execution
 - **Token Usage Tracking**: Real-time token consumption per operation
-- **Cost Estimation**: Google Generative AI pricing estimates
+- **Cost Estimation**: Azure OpenAI pricing estimates
 - **Execution Metrics**: Node-by-node performance tracking
 - **Error Monitoring**: Detailed error tracking and reporting
 
@@ -376,19 +379,20 @@ docker logs research-brief-api
 
 ### Cloud Deployment
 
-#### Google Cloud Run
+#### Azure Container Instances
 
 ```bash
-# Build and push to Google Container Registry
-docker build -t gcr.io/PROJECT_ID/research-brief .
-docker push gcr.io/PROJECT_ID/research-brief
+# Build and push to Azure Container Registry
+docker build -t research-brief .
+az acr build --registry your-registry --image research-brief .
 
-# Deploy to Cloud Run
-gcloud run deploy research-brief \
-  --image gcr.io/PROJECT_ID/research-brief \
-  --platform managed \
-  --region us-central1 \
-  --allow-unauthenticated
+# Deploy to Azure Container Instances
+az container create \
+  --resource-group your-rg \
+  --name research-brief \
+  --image your-registry.azurecr.io/research-brief \
+  --dns-name-label research-brief \
+  --ports 8000
 ```
 
 #### AWS ECS
@@ -418,7 +422,7 @@ aws ecs create-cluster --cluster-name research-brief
 
 ### Cost Estimation
 
-- **Google Generative AI Gemini**: ~$0.02-0.04 per brief
+- **Azure OpenAI GPT-4**: ~$0.02-0.04 per brief
 - **Tavily Search**: ~$0.01-0.02 per brief
 - **Total**: ~$0.04-0.07 per brief
 
@@ -428,7 +432,10 @@ aws ecs create-cluster --cluster-name research-brief
 
 ```bash
 # Required
-GOOGLE_API_KEY=your-google-api-key
+AZURE_OPENAI_API_KEY=your-azure-openai-api-key
+AZURE_OPENAI_ENDPOINT=https://your-resource.openai.azure.com/
+AZURE_OPENAI_API_VERSION=2024-02-15-preview
+AZURE_OPENAI_LLM_DEPLOYMENT_NAME=your-deployment-name
 TAVILY_API_KEY=tvly-...
 
 # Optional
@@ -454,7 +461,7 @@ SECONDARY_MODEL=gpt-4o
 
 ### Current Limitations
 
-1. **Rate Limits**: Google Generative AI API rate limits may affect performance
+1. **Rate Limits**: Azure OpenAI API rate limits may affect performance
 2. **Content Quality**: Web scraping depends on source quality
 3. **Context Window**: Limited by LLM context windows
 4. **Cost**: API costs scale with usage
@@ -491,4 +498,4 @@ For issues and questions:
 
 ---
 
-**Built with ❤️ using LangGraph, LangChain v0.3+, and Google Generative AI** 
+**Built with ❤️ using LangGraph, LangChain v0.3+, and Azure OpenAI** 

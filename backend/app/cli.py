@@ -73,21 +73,21 @@ def generate(
     """
     try:
         # Validate environment
-        if not all([settings.GOOGLE_API_KEY, settings.TAVILY_API_KEY]):
+        if not all([settings.AZURE_OPENAI_API_KEY, settings.AZURE_OPENAI_ENDPOINT, settings.AZURE_OPENAI_LLM_DEPLOYMENT_NAME, settings.TAVILY_API_KEY]):
             console.print(
                 "[red]Error: Missing required API keys. Please check your .env file.[/red]"
             )
-            console.print("Required keys: GOOGLE_API_KEY, TAVILY_API_KEY")
+            console.print("Required keys: AZURE_OPENAI_API_KEY, AZURE_OPENAI_ENDPOINT, AZURE_OPENAI_LLM_DEPLOYMENT_NAME, TAVILY_API_KEY")
             sys.exit(1)
         
         # Display startup information
         console.print(Panel.fit(
-            f"[bold blue]Research Brief Generator (Google Generative AI)[/bold blue]\n"
+            f"[bold blue]Research Brief Generator (Azure OpenAI)[/bold blue]\n"
             f"Topic: [yellow]{topic}[/yellow]\n"
             f"User: [cyan]{user_id}[/cyan]\n"
             f"Depth: [green]{depth.value}[/green]\n"
             f"Follow-up: [{'green' if follow_up else 'red'}]{follow_up}[/]\n"
-            f"LLM Provider: [blue]Google Generative AI[/blue]\n"
+            f"LLM Provider: [blue]Azure OpenAI[/blue]\n"
             f"Storage: [cyan]SQLite[/cyan]",
             title="Configuration"
         ))
@@ -301,10 +301,10 @@ def config():
     table.add_column("Value", style="white")
     
     table.add_row("Environment", settings.ENVIRONMENT)
-    table.add_row("LLM Provider", "Google Generative AI")
+    table.add_row("LLM Provider", "Azure OpenAI")
     table.add_row("Primary Model", settings.PRIMARY_MODEL)
     table.add_row("Secondary Model", settings.SECONDARY_MODEL)
-    table.add_row("Google API Key", "Set" if settings.GOOGLE_API_KEY else "Not set")
+    table.add_row("Azure OpenAI API Key", "Set" if settings.AZURE_OPENAI_API_KEY else "Not set")
     table.add_row("Storage", "SQLite")
     table.add_row("Database URL", settings.DATABASE_URL)
     table.add_row("LangSmith Tracing", str(settings.LANGCHAIN_TRACING_V2))
@@ -353,7 +353,7 @@ def monitoring():
     table.add_row("Endpoint", settings.langsmith_endpoint, "")
     table.add_row("Trace URLs", "✅ Available" if metrics_collector.langsmith_manager.is_enabled else "❌ Not available", "")
     table.add_row("Token Tracking", "✅ Available", "Real-time token usage tracking")
-    table.add_row("Cost Estimation", "✅ Available", "Google Generative AI pricing estimates")
+    table.add_row("Cost Estimation", "✅ Available", "Azure OpenAI pricing estimates")
     table.add_row("Execution Metrics", "✅ Available", "Node execution times and performance")
     
     console.print(table)
@@ -381,7 +381,7 @@ def test():
     """
     Run a quick test to verify the system is working.
     """
-    console.print("[bold]Testing Research Brief Generator (Google Generative AI)[/bold]\n")
+    console.print("[bold]Testing Research Brief Generator (Azure OpenAI)[/bold]\n")
     
     # Test configuration
     console.print("1. Testing configuration...")
@@ -393,7 +393,7 @@ def test():
         return
     
     # Test LLM setup
-    console.print("2. Testing Google Generative AI setup...")
+    console.print("2. Testing Azure OpenAI setup...")
     try:
         from app.llm_setup import get_primary_llm, get_secondary_llm
         primary_llm = get_primary_llm()
