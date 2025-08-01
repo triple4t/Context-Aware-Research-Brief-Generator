@@ -45,8 +45,11 @@ class Settings:
         """Get LangSmith endpoint from new or old variables."""
         return self.LANGSMITH_ENDPOINT or self.LANGCHAIN_ENDPOINT
     
-    # Google Generative AI Configuration
-    GOOGLE_API_KEY: Optional[str] = os.getenv("GOOGLE_API_KEY")
+    # Azure OpenAI Configuration
+    AZURE_OPENAI_API_KEY: Optional[str] = os.getenv("AZURE_OPENAI_API_KEY")
+    AZURE_OPENAI_ENDPOINT: Optional[str] = os.getenv("AZURE_OPENAI_ENDPOINT")
+    AZURE_OPENAI_API_VERSION: str = os.getenv("AZURE_OPENAI_API_VERSION", "2024-02-15-preview")
+    AZURE_OPENAI_LLM_DEPLOYMENT_NAME: Optional[str] = os.getenv("AZURE_OPENAI_LLM_DEPLOYMENT_NAME")
     
     # Search Tool
     TAVILY_API_KEY: Optional[str] = os.getenv("TAVILY_API_KEY")
@@ -64,14 +67,16 @@ class Settings:
     REQUEST_TIMEOUT: int = int(os.getenv("REQUEST_TIMEOUT", "30"))
     
     # LLM Model Settings
-    PRIMARY_MODEL: str = os.getenv("PRIMARY_MODEL", "gemini-1.5-pro")
-    SECONDARY_MODEL: str = os.getenv("SECONDARY_MODEL", "gemini-1.5-flash")  # Using flash for faster tasks
+    PRIMARY_MODEL: str = os.getenv("PRIMARY_MODEL", "gpt-4o")
+    SECONDARY_MODEL: str = os.getenv("SECONDARY_MODEL", "gpt-4o")
     
     @classmethod
     def validate(cls) -> None:
         """Validate that required environment variables are set."""
         required_vars = [
-            "GOOGLE_API_KEY",
+            "AZURE_OPENAI_API_KEY",
+            "AZURE_OPENAI_ENDPOINT",
+            "AZURE_OPENAI_LLM_DEPLOYMENT_NAME",
             "TAVILY_API_KEY"
         ]
         

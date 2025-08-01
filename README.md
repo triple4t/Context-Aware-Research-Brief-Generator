@@ -1,6 +1,6 @@
 # Context-Aware Research Brief Generator
 
-A production-grade research assistant system that generates structured, evidence-linked research briefs using LangGraph and LangChain with Google Generative AI (Gemini). The system supports follow-up queries by summarizing prior user interactions and incorporating this context into subsequent outputs.
+A production-grade research assistant system that generates structured, evidence-linked research briefs using LangGraph and LangChain with Azure OpenAI. The system supports follow-up queries by summarizing prior user interactions and incorporating this context into subsequent outputs.
 
 ## 🎯 Problem Statement and Objective
 
@@ -10,7 +10,7 @@ Traditional research tools often lack context awareness and produce isolated res
 - **Structured Outputs**: All outputs follow strict schemas with validation
 - **Modular Architecture**: Uses LangGraph for orchestration with distinct processing nodes
 - **Production Ready**: Includes API, CLI, testing, monitoring, and deployment capabilities
-- **Google Generative AI Integration**: Uses the latest LangChain v0.3+ with Google Generative AI (Gemini) API
+- **Azure OpenAI Integration**: Uses the latest LangChain v0.3+ with Azure OpenAI API
 - **Simple Storage**: Uses SQLite for data persistence without external dependencies
 
 ## 🏗️ Architecture
@@ -47,8 +47,8 @@ graph TD
 
 ### LLM Strategy
 
-- **Google Generative AI (Gemini)**: Used for all reasoning tasks including planning, summarization, and synthesis
-- **Dual Model Approach**: Uses Gemini Pro for complex tasks and Gemini Flash for faster operations
+- **Azure OpenAI GPT-4o**: Used for all reasoning tasks including planning, summarization, and synthesis
+- **Single Model Approach**: Uses the same Azure OpenAI deployment for all tasks with different configurations
 
 ### Tools
 
@@ -90,7 +90,7 @@ class FinalBrief(BaseModel):
 ### Prerequisites
 
 - Python 3.11+
-- Google Generative AI API access
+- Azure OpenAI API access
 - Tavily API key
 
 ### Installation
@@ -109,7 +109,7 @@ class FinalBrief(BaseModel):
 3. **Set up environment variables**:
    ```bash
    cp env.example .env
-   # Edit .env with your Google Generative AI credentials
+   # Edit .env with your Azure OpenAI credentials
    ```
 
 4. **Run tests**:
@@ -120,8 +120,11 @@ class FinalBrief(BaseModel):
 ### Environment Variables
 
 ```bash
-# Google Generative AI Configuration
-GOOGLE_API_KEY=your-google-api-key
+# Azure OpenAI Configuration
+AZURE_OPENAI_API_KEY=your-azure-openai-api-key
+AZURE_OPENAI_ENDPOINT=https://your-resource.openai.azure.com/
+AZURE_OPENAI_API_VERSION=2024-02-15-preview
+AZURE_OPENAI_LLM_DEPLOYMENT_NAME=your-deployment-name
 
 # Search Tool
 TAVILY_API_KEY=tvly-...
@@ -183,7 +186,7 @@ docker run -p 8000:8000 --env-file .env research-brief
 
 ### POST /brief
 
-Generate a research brief using Google Generative AI.
+Generate a research brief using Azure OpenAI.
 
 **Request Body**:
 ```json
@@ -226,7 +229,7 @@ Health check endpoint.
 
 ### GET /models
 
-Get information about available models (Google Generative AI).
+Get information about available models (Azure OpenAI).
 
 ## 🧪 Testing
 
@@ -440,6 +443,7 @@ git push heroku main
 # Required
 AZURE_OPENAI_API_KEY=your-azure-openai-api-key
 AZURE_OPENAI_ENDPOINT=https://your-resource.openai.azure.com/
+AZURE_OPENAI_LLM_DEPLOYMENT_NAME=your-deployment-name
 TAVILY_API_KEY=tvly-...
 
 # Optional

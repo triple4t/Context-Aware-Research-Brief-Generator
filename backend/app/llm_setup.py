@@ -1,8 +1,8 @@
 """
-LLM setup and configuration for the research brief generator using Google Generative AI.
+LLM setup and configuration for the research brief generator using Azure OpenAI.
 """
 
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_openai import AzureChatOpenAI
 from langchain.schema import HumanMessage, SystemMessage
 from langchain.output_parsers import PydanticOutputParser
 from langchain_core.runnables import RunnablePassthrough, RunnableMap
@@ -21,23 +21,27 @@ logger = logging.getLogger(__name__)
 settings.validate()
 
 
-def get_primary_llm() -> ChatGoogleGenerativeAI:
+def get_primary_llm() -> AzureChatOpenAI:
     """Get the primary LLM for complex reasoning tasks."""
-    return ChatGoogleGenerativeAI(
-        model=settings.PRIMARY_MODEL,
-        google_api_key=settings.GOOGLE_API_KEY,
+    return AzureChatOpenAI(
+        azure_deployment=settings.AZURE_OPENAI_LLM_DEPLOYMENT_NAME,
+        openai_api_version=settings.AZURE_OPENAI_API_VERSION,
+        azure_endpoint=settings.AZURE_OPENAI_ENDPOINT,
+        api_key=settings.AZURE_OPENAI_API_KEY,
         temperature=0.1,
-        max_output_tokens=4000
+        max_tokens=4000
     )
 
 
-def get_secondary_llm() -> ChatGoogleGenerativeAI:
+def get_secondary_llm() -> AzureChatOpenAI:
     """Get the secondary LLM for faster, simpler tasks."""
-    return ChatGoogleGenerativeAI(
-        model=settings.SECONDARY_MODEL,
-        google_api_key=settings.GOOGLE_API_KEY,
+    return AzureChatOpenAI(
+        azure_deployment=settings.AZURE_OPENAI_LLM_DEPLOYMENT_NAME,
+        openai_api_version=settings.AZURE_OPENAI_API_VERSION,
+        azure_endpoint=settings.AZURE_OPENAI_ENDPOINT,
+        api_key=settings.AZURE_OPENAI_API_KEY,
         temperature=0.1,
-        max_output_tokens=2000
+        max_tokens=2000
     )
 
 
@@ -65,7 +69,7 @@ def create_structured_llm(
     else:
         llm = get_secondary_llm()
 
-    # Use the structured output method for Google Generative AI
+    # Use the structured output method for Azure OpenAI
     structured_llm = llm.with_structured_output(pydantic_class)
 
     # Create a default system prompt if none provided
