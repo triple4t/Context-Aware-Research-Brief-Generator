@@ -2,7 +2,7 @@
 
 A production-grade research assistant system that generates structured, evidence-linked research briefs using LangGraph and LangChain with Azure OpenAI. The system supports follow-up queries by summarizing prior user interactions and incorporating this context into subsequent outputs.
 
-## 🎨 Frontend
+## 🎨 Frontend (Local Development)
 
 A modern Next.js frontend with Tailwind CSS provides a professional interface for:
 - **📊 Dashboard**: Real-time metrics and activity visualization
@@ -11,18 +11,27 @@ A modern Next.js frontend with Tailwind CSS provides a professional interface fo
 - **📊 History**: View and manage previous research briefs
 - **⚙️ Settings**: Configure backend connection and system settings
 
+> **Note**: The frontend is configured for local development only and is not tracked in git. This allows for flexible frontend development without affecting the core backend repository.
+
 ### Quick Frontend Start
 
 ```bash
-# Start both backend and frontend
-python start_app.py
-
-# Or start frontend only (if backend is already running)
+# Start frontend for local development
 cd frontend
+npm install  # First time only
 npm run dev
 ```
 
 The frontend will be available at: **http://localhost:3000**
+
+### Frontend Development
+
+The frontend directory contains:
+- **Next.js 15.4.5** with TypeScript
+- **Tailwind CSS** for styling
+- **Heroicons** for icons
+- **Local development** configuration
+- **Type-safe** API integration with backend
 
 ## 🎯 Problem Statement and Objective
 
@@ -64,6 +73,30 @@ graph TD
 4. **Per-Source Summarizer**: Summarizes individual sources
 5. **Synthesizer**: Combines all sources into final brief
 6. **Error Handler**: Manages errors gracefully
+
+## 📁 Project Structure
+
+```
+Context-Aware Research Brief Generator/
+├── backend/                    # Backend (tracked in git)
+│   ├── app/                   # Main application code
+│   │   ├── cli.py            # Command-line interface
+│   │   ├── graph.py          # LangGraph workflow
+│   │   ├── nodes.py          # Processing nodes
+│   │   ├── schemas.py        # Pydantic models
+│   │   └── main.py           # FastAPI server
+│   ├── tests/                # Test suite
+│   ├── requirements.txt      # Python dependencies
+│   └── README.md            # Backend documentation
+├── frontend/                  # Frontend (local development only)
+│   ├── src/                  # Next.js source code
+│   ├── package.json          # Node.js dependencies
+│   └── README.md            # Frontend documentation
+├── .gitignore               # Git ignore rules
+└── README.md               # Main documentation
+```
+
+> **Note**: The frontend directory is excluded from git tracking to allow for flexible local development without affecting the core backend repository.
 
 ## 🎨 Frontend Features
 
@@ -159,8 +192,9 @@ class FinalBrief(BaseModel):
 - Python 3.11+
 - Azure OpenAI API access
 - Tavily API key
+- Node.js 18+ (for frontend development)
 
-### Complete Setup (Backend + Frontend)
+### Backend Setup
 
 1. **Clone and setup**:
    ```bash
@@ -168,41 +202,50 @@ class FinalBrief(BaseModel):
    cd Context-Aware-Research-Brief-Generator
    ```
 
-2. **Install dependencies**:
+2. **Install backend dependencies**:
    ```bash
-   # Backend dependencies
    cd backend
    pip install -r requirements.txt
-   
-   # Frontend dependencies
-   cd ../frontend
-   npm install
    ```
 
 3. **Configure environment**:
    ```bash
-   cd ../backend
    cp env.example .env
    # Edit .env with your Azure OpenAI credentials
    ```
 
-4. **Start the complete application**:
+4. **Start the backend**:
    ```bash
-   # From the root directory
-   python start_app.py
+   python -m app.main
    ```
 
-5. **Access the application**:
-   - **Frontend**: http://localhost:3000
-   - **Backend API**: http://localhost:8000
+5. **Access the backend**:
+   - **API**: http://localhost:8000
    - **API Docs**: http://localhost:8000/docs
+   - **CLI**: `python -m app.cli generate --topic "your topic"`
 
-### Installation
+### Frontend Development (Optional)
+
+1. **Install frontend dependencies**:
+   ```bash
+   cd frontend
+   npm install
+   ```
+
+2. **Start frontend development server**:
+   ```bash
+   npm run dev
+   ```
+
+3. **Access the frontend**:
+   - **Frontend**: http://localhost:3000
+
+### Backend Installation
 
 1. **Clone the repository**:
    ```bash
    git clone <repository-url>
-   cd backend
+   cd Context-Aware-Research-Brief-Generator/backend
    ```
 
 2. **Install dependencies**:
@@ -219,6 +262,11 @@ class FinalBrief(BaseModel):
 4. **Run tests**:
    ```bash
    pytest
+   ```
+
+5. **Test the CLI**:
+   ```bash
+   python -m app.cli generate --topic "test topic"
    ```
 
 ### Environment Variables
