@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Layout from '../../components/Layout';
-import { apiClient } from '../../lib/api';
-import { UserHistory } from '../../types';
+import Layout from '@/components/Layout';
+import { apiClient } from '@/lib/api';
+import { UserHistory } from '@/types';
 import { ChartBarIcon, DocumentTextIcon, CalendarIcon, GlobeAltIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
 
 export default function History() {

@@ -1,9 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Layout from '../components/Layout';
-import { apiClient } from '../lib/api';
-import { UserStats, HealthCheck } from '../types';
+import Layout from '@/components/Layout';
+import { apiClient } from '@/lib/api';
+import { UserStats, HealthCheck } from '@/types';
 import {
   DocumentTextIcon,
   ClockIcon,

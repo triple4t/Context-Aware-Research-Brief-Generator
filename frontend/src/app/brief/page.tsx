@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import Layout from '../../components/Layout';
-import { apiClient } from '../../lib/api';
-import { BriefResponse } from '../../types';
+import Layout from '@/components/Layout';
+import { apiClient } from '@/lib/api';
+import { BriefResponse } from '@/types';
 import { DocumentTextIcon, CheckCircleIcon, XCircleIcon, SparklesIcon } from '@heroicons/react/24/outline';
 
 export default function BriefGenerator() {
