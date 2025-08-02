@@ -190,6 +190,9 @@ Thumbs.db
 # Node modules (if any frontend dependencies)
 node_modules/
 
+# Frontend directory (exclude entire frontend from git tracking)
+frontend/
+
 # Build artifacts
 dist/
 build/
