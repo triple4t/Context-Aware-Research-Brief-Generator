@@ -452,6 +452,149 @@ async def get_execution_metrics(trace_id: str):
         )
 
 
+@app.post("/chat")
+async def chat_response(request: dict):
+    """
+    Get a quick conversational response for research questions.
+    
+    This endpoint provides natural conversation responses similar to the frontend chat.
+    """
+    try:
+        user_input = request.get("message", "")
+        user_id = request.get("user_id", "api-user")
+        
+        if not user_input:
+            raise HTTPException(
+                status_code=400,
+                detail="Message is required"
+            )
+        
+        # Get user history for context
+        history = storage.get_user_history(user_id, limit=5)
+        conversations = storage.get_conversation_history(user_id, limit=10)
+        
+        # Generate conversational response
+        from app.llm_setup import get_secondary_llm
+        llm = get_secondary_llm()
+        
+        # Prepare enhanced context from history (like CLI version)
+        context_text = ""
+        if history:
+            context_text = "\n\nPrevious research context:\n"
+            for brief in history[-3:]:
+                context_text += f"- {brief.topic}: {brief.executive_summary[:200]}...\n"
+                context_text += f"  Key insights: {', '.join(brief.key_insights[:3])}\n"
+                context_text += f"  Sources: {len(brief.references)} sources\n"
+        
+        # Prepare enhanced conversation context
+        conversation_context = ""
+        if conversations:
+            conversation_context = "\n\nRecent conversation context:\n"
+            for conv in conversations[-5:]:
+                conversation_context += f"User: {conv['user_input']}\n"
+                conversation_context += f"Bot: {conv['bot_response'][:150]}...\n"
+                conversation_context += f"Type: {conv['interaction_type']} | {conv['created_at']}\n\n"
+        
+        # Check if question relates to previous research
+        research_keywords = ['research', 'study', 'analysis', 'trends', 'applications', 'technology', 'ai', 'ml', 'machine learning', 'artificial intelligence']
+        is_research_related = any(keyword in user_input.lower() for keyword in research_keywords)
+        
+        if is_research_related and history:
+            context_text += f"\nNote: The user's question appears related to previous research topics. Use this context to provide a more informed response."
+        
+        # Handle special cases like date/time questions (like CLI version)
+        from datetime import datetime, timedelta
+        current_time = datetime.now()
+        
+        # Initialize response_text
+        response_text = ""
+        
+        # Check if question is specifically about time/date (not news or other topics)
+        time_keywords = ['date', 'time', 'today', 'now', 'tomorrow', 'yesterday']
+        news_keywords = ['news', 'latest', 'update', 'breaking', 'report', 'announcement', 'statement', 'meeting', 'visit', 'election', 'politics', 'modi', 'trump', 'biden', 'putin', 'china', 'india', 'usa', 'united states']
+        
+        # Only trigger time response if the question is specifically about time/date
+        # and doesn't contain news-related keywords
+        is_time_only_question = (
+            any(word in user_input.lower() for word in time_keywords) and
+            not any(word in user_input.lower() for word in news_keywords) and
+            len(user_input.split()) <= 5  # Short questions are more likely to be time-only
+        )
+        
+        if is_time_only_question:
+            try:
+                if 'tomorrow' in user_input.lower():
+                    tomorrow = current_time + timedelta(days=1)
+                    response_text = f"Tomorrow will be {tomorrow.strftime('%B %d, %Y')} ({tomorrow.strftime('%A')})."
+                elif 'yesterday' in user_input.lower():
+                    yesterday = current_time - timedelta(days=1)
+                    response_text = f"Yesterday was {yesterday.strftime('%B %d, %Y')} ({yesterday.strftime('%A')})."
+                else:
+                    response_text = f"Today's date is {current_time.strftime('%B %d, %Y')} ({current_time.strftime('%A')}) and the current time is {current_time.strftime('%I:%M %p')}."
+            except Exception as e:
+                logger.error(f"Time handling error: {e}")
+                response_text = f"Today is {current_time.strftime('%B %d, %Y')} and the current time is {current_time.strftime('%I:%M %p')}."
+        else:
+            # Create enhanced prompt for conversational response (like CLI version)
+            prompt = f"""You are a helpful research assistant in an ongoing conversation. Provide a natural, conversational response to the user's question.
+
+Current date and time: {current_time.strftime('%B %d, %Y at %I:%M %p')}
+
+{context_text}
+{conversation_context}
+
+User question: {user_input}
+
+Instructions:
+1. Answer the question naturally and conversationally
+2. If the question relates to previous research topics, reference that context
+3. If the question refers to previous conversation, acknowledge that context
+4. If the question is about current events, news, or politics, provide up-to-date information based on recent developments
+5. For questions about political figures, leaders, or current events, provide relevant recent information
+6. If this topic would benefit from a full research brief, mention that option
+7. Keep responses focused and relevant to the ongoing conversation
+8. Be helpful and encouraging
+9. You have access to current date/time information if needed
+10. For news-related questions, provide the most recent information available"""
+            
+            try:
+                # Get response from LLM
+                response = llm.invoke(prompt)
+                
+                # Extract only the content
+                if hasattr(response, 'content'):
+                    response_text = response.content
+                else:
+                    response_text = str(response)
+            except Exception as e:
+                logger.error(f"LLM error: {e}")
+                response_text = f"I understand you're asking about '{user_input}'. This would be a great topic for a research brief! Would you like me to generate a comprehensive brief on this topic?"
+        
+
+        
+        # Save conversation
+        storage.save_conversation(user_id, user_input, response_text, "api_chat")
+        
+        return {
+            "response": response_text,
+            "user_id": user_id,
+            "timestamp": datetime.utcnow().isoformat(),
+            "context": {
+                "previous_briefs": len(history),
+                "previous_conversations": len(conversations)
+            }
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error in chat response: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to generate chat response"
+        )
+
+
 if __name__ == "__main__":
     uvicorn.run(
         "app.main:app",

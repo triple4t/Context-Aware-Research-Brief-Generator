@@ -142,7 +142,7 @@ class BriefStorage:
             logger.error(f"Error saving brief: {e}")
             return False
     
-    def get_user_history(self, user_id: str, limit: int = 10) -> List[FinalBrief]:
+    def get_user_history(self, user_id: str, limit: int = 10) -> List[Dict[str, Any]]:
         """
         Get user's research history.
         
@@ -151,14 +151,14 @@ class BriefStorage:
             limit: Maximum number of briefs to return
             
         Returns:
-            List of previous briefs
+            List of previous briefs with database IDs
         """
         try:
             with sqlite3.connect(self.db_path) as conn:
                 cursor = conn.cursor()
                 
                 cursor.execute("""
-                    SELECT brief_data FROM briefs 
+                    SELECT id, brief_data, created_at FROM briefs 
                     WHERE user_id = ? 
                     ORDER BY created_at DESC 
                     LIMIT ?
@@ -169,9 +169,16 @@ class BriefStorage:
                 
                 for row in results:
                     try:
-                        brief_data = json.loads(row[0])
-                        brief = FinalBrief.model_validate(brief_data)
-                        briefs.append(brief)
+                        brief_id, brief_data, created_at = row
+                        brief_obj = json.loads(brief_data)
+                        brief = FinalBrief.model_validate(brief_obj)
+                        
+                        # Create a dict with the brief data and additional fields
+                        brief_dict = brief.model_dump()
+                        brief_dict['id'] = brief_id
+                        brief_dict['generated_at'] = created_at
+                        
+                        briefs.append(brief_dict)
                     except Exception as e:
                         logger.error(f"Error parsing brief data: {e}")
                         continue

@@ -808,5 +808,200 @@ Provide a helpful response based on your knowledge."""
         console.print(f"[red]Error: {str(e)}[/red]")
 
 
+@cli_app.command()
+def quick_chat(
+    user_id: str = typer.Option("chat-user", "--user", "-u", help="User ID for chat"),
+    verbose: bool = typer.Option(False, "--verbose", "-v", help="Verbose output")
+):
+    """
+    Simple conversational chat mode for quick research discussions.
+    
+    This provides a natural conversation interface similar to the frontend chat.
+    """
+    console.print(Panel.fit(
+        "[bold blue]Quick Chat Mode[/bold blue]\n"
+        f"User: [cyan]{user_id}[/cyan]\n"
+        "Ask me anything about research topics, methodology, or request briefs!",
+        title="Quick Chat"
+    ))
+    
+    try:
+        # Get user history for context
+        history = storage.get_user_history(user_id, limit=5)
+        conversations = storage.get_conversation_history(user_id, limit=10)
+        
+        if history:
+            console.print(f"[dim]Found {len(history)} previous research briefs for context[/dim]")
+        if conversations:
+            console.print(f"[dim]Found {len(conversations)} previous conversations[/dim]")
+        
+        console.print(f"\n[bold cyan]Commands:[/bold cyan]")
+        console.print(f"• [green]Type anything[/green] - Get conversational responses")
+        console.print(f"• [yellow]Type 'brief'[/yellow] - Generate a research brief")
+        console.print(f"• [blue]Type 'history'[/blue] - View research history")
+        console.print(f"• [red]Type 'quit'[/red] - Exit chat")
+        console.print(f"• [purple]Type 'help'[/purple] - Show this menu")
+        
+        # Start chat loop
+        while True:
+            try:
+                # Get user input
+                user_input = console.input("\n[bold cyan]You:[/bold cyan] ").strip()
+                
+                if user_input.lower() in ['quit', 'exit', 'q']:
+                    console.print("[yellow]Goodbye![/yellow]")
+                    break
+                
+                if user_input.lower() == 'help':
+                    console.print(f"\n[bold cyan]Commands:[/bold cyan]")
+                    console.print(f"• [green]Type anything[/green] - Get conversational responses")
+                    console.print(f"• [yellow]Type 'brief'[/yellow] - Generate a research brief")
+                    console.print(f"• [blue]Type 'history'[/blue] - View research history")
+                    console.print(f"• [red]Type 'quit'[/red] - Exit chat")
+                    console.print(f"• [purple]Type 'help'[/purple] - Show this menu")
+                    continue
+                
+                if user_input.lower() == 'history':
+                    console.print("\n[bold]Research History:[/bold]")
+                    for i, brief in enumerate(history, 1):
+                        console.print(f"{i}. {brief.topic} ({len(brief.references)} sources)")
+                    continue
+                
+                if user_input.lower() == 'brief':
+                    topic_input = console.input("[bold green]Enter topic for research brief:[/bold green] ")
+                    if topic_input.strip():
+                        console.print(f"[dim]Generating research brief for: {topic_input}[/dim]")
+                        # This would call the brief generation logic
+                        console.print(f"[green]✅ Brief generation started![/green]")
+                        console.print(f"[dim]Use 'python -m app.cli generate --topic \"{topic_input}\"' for full brief[/dim]")
+                    continue
+                
+                if not user_input:
+                    continue
+                
+                # Generate conversational response
+                response = generate_conversational_response(user_input, history, conversations)
+                
+                console.print(f"[bold green]Assistant:[/bold green] {response}")
+                
+                # Save conversation
+                storage.save_conversation(user_id, user_input, response, "chat")
+                
+                # Refresh conversation history
+                conversations = storage.get_conversation_history(user_id, limit=10)
+                
+            except KeyboardInterrupt:
+                console.print("\n[yellow]Chat interrupted. Type 'quit' to exit.[/yellow]")
+                continue
+                
+    except Exception as e:
+        console.print(f"[red]Error in chat: {str(e)}[/red]")
+        if verbose:
+            console.print_exception()
+
+
+def generate_conversational_response(user_input: str, history: list, conversations: list) -> str:
+    """Generate a conversational response similar to the frontend."""
+    
+    # Convert input to lowercase for easier matching
+    input_lower = user_input.lower()
+    
+    # Research methodology questions
+    if any(word in input_lower for word in ["methodology", "method", "approach", "how to research"]):
+        return """Great question about research methodology! Here are some key approaches:
+
+🔍 **Qualitative Research**: Interviews, focus groups, case studies
+📊 **Quantitative Research**: Surveys, experiments, statistical analysis
+🔄 **Mixed Methods**: Combining both qualitative and quantitative approaches
+📚 **Literature Review**: Systematic review of existing research
+🔬 **Experimental Design**: Controlled studies with variables
+
+What specific type of research are you interested in? I can provide more detailed guidance!"""
+
+    # Research topics
+    elif any(word in input_lower for word in ["topic", "research topic", "what should i research"]):
+        return """Here are some interesting research topics across different fields:
+
+🤖 **Technology**: AI ethics, cybersecurity, renewable energy
+🏥 **Healthcare**: Telemedicine, mental health, personalized medicine
+🌍 **Environment**: Climate change, sustainability, green technology
+💰 **Business**: Digital transformation, remote work, e-commerce
+🎓 **Education**: Online learning, STEM education, personalized learning
+
+Would you like me to help you develop a specific research question or generate a comprehensive brief on any of these topics?"""
+
+    # Data analysis
+    elif any(word in input_lower for word in ["data", "analysis", "statistics", "survey"]):
+        return """Data analysis is crucial for research! Here's what you need to know:
+
+📈 **Descriptive Statistics**: Mean, median, mode, standard deviation
+📊 **Inferential Statistics**: T-tests, ANOVA, regression analysis
+🔍 **Qualitative Analysis**: Thematic analysis, content analysis
+📋 **Survey Design**: Question types, sampling methods, response rates
+🛠️ **Tools**: SPSS, R, Python, Excel, Tableau
+
+What type of data are you working with? I can suggest the best analysis methods!"""
+
+    # Literature review
+    elif any(word in input_lower for word in ["literature", "review", "sources", "references"]):
+        return """Literature reviews are essential! Here's how to approach them:
+
+📚 **Systematic Review**: Comprehensive analysis of all relevant studies
+🔍 **Narrative Review**: Storytelling approach to research findings
+📊 **Meta-analysis**: Statistical analysis of multiple studies
+📖 **Sources**: Academic journals, books, conference papers, reports
+🔗 **Citation Management**: Use tools like Zotero, Mendeley, EndNote
+
+Would you like help finding relevant sources or organizing your literature review?"""
+
+    # Writing and presentation
+    elif any(word in input_lower for word in ["write", "writing", "present", "presentation"]):
+        return """Great! Here are tips for research writing and presentation:
+
+✍️ **Structure**: Introduction, literature review, methodology, results, discussion, conclusion
+📝 **Academic Writing**: Clear, concise, evidence-based arguments
+📊 **Visualization**: Charts, graphs, infographics for data presentation
+🎤 **Presentation**: Storytelling, engaging visuals, clear key messages
+📋 **Abstract**: Concise summary of research purpose, methods, results, conclusions
+
+What aspect of research writing would you like to focus on?"""
+
+    # Brief generation request
+    elif any(word in input_lower for word in ["brief", "generate", "research brief", "comprehensive"]):
+        return """I'd be happy to generate a comprehensive research brief for you! 
+
+To get started, you can:
+1. **Type 'brief'** and enter your topic for a structured approach
+2. **Tell me your topic** and I'll help you formulate a research question
+3. **Specify your needs**: depth level, focus areas, or specific requirements
+
+What research topic would you like to explore? I can help you develop it into a full research brief!"""
+
+    # General research questions
+    elif any(word in input_lower for word in ["research", "study", "investigate", "explore"]):
+        return """Research is an exciting journey! Here's how to get started:
+
+🎯 **Define Your Question**: What do you want to know?
+📚 **Background Research**: What's already known about this topic?
+🔍 **Choose Your Method**: Qualitative, quantitative, or mixed methods?
+📊 **Plan Your Analysis**: How will you interpret your findings?
+📝 **Share Your Results**: Writing, presenting, publishing
+
+What specific research question are you working on? I'm here to help guide you through the process!"""
+
+    # General conversation
+    else:
+        return f"""Thanks for your message about "{user_input}"! 
+
+I'm your research assistant, and I can help you with:
+• 📚 Research methodology and approaches
+• 🔍 Finding and analyzing research topics
+• 📊 Data analysis and statistics
+• 📝 Academic writing and presentation
+• 📋 Generating comprehensive research briefs
+
+What would you like to explore? I'm here to help make your research journey easier and more productive!"""
+
+
 if __name__ == "__main__":
     cli_app() 

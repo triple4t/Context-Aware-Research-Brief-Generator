@@ -69,21 +69,39 @@ def create_structured_llm(
     else:
         llm = get_secondary_llm()
 
-    # Use the structured output method for Azure OpenAI
-    structured_llm = llm.with_structured_output(pydantic_class)
-
     # Create a default system prompt if none provided
     if system_prompt is None:
         system_prompt = f"""You are an expert research assistant. Your task is to analyze the given input and provide a structured response in the format specified by the {pydantic_class.__name__} schema.
 
-Please ensure your response is accurate, comprehensive, and follows the required structure."""
+Please ensure your response is accurate, comprehensive, and follows the required structure. Pay special attention to:
+- Providing detailed, informative content
+- Following the exact schema requirements
+- Ensuring all required fields are populated
+- Making content actionable and valuable"""
 
-    prompt = ChatPromptTemplate.from_messages([
-        ("system", system_prompt),
-        ("human", "{input}")
-    ])
+    try:
+        # Use the structured output method for Azure OpenAI
+        structured_llm = llm.with_structured_output(pydantic_class)
+        
+        prompt = ChatPromptTemplate.from_messages([
+            ("system", system_prompt),
+            ("human", "{input}")
+        ])
 
-    return prompt | structured_llm
+        return prompt | structured_llm
+        
+    except Exception as e:
+        logger.warning(f"Failed to create structured LLM with structured output, falling back to parser: {e}")
+        
+        # Fallback to using a parser
+        parser = PydanticOutputParser(pydantic_object=pydantic_class)
+        
+        prompt = ChatPromptTemplate.from_messages([
+            ("system", system_prompt + f"\n\n{parser.get_format_instructions()}"),
+            ("human", "{input}")
+        ])
+        
+        return prompt | llm | parser
 
 
 def create_context_summarizer_prompt(context: str, topic: str) -> list:

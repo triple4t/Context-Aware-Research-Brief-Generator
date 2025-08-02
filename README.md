@@ -2,6 +2,28 @@
 
 A production-grade research assistant system that generates structured, evidence-linked research briefs using LangGraph and LangChain with Azure OpenAI. The system supports follow-up queries by summarizing prior user interactions and incorporating this context into subsequent outputs.
 
+## 🎨 Frontend
+
+A modern Next.js frontend with Tailwind CSS provides a professional interface for:
+- **📊 Dashboard**: Real-time metrics and activity visualization
+- **💬 Chat**: Interactive conversation with the research assistant
+- **📋 Brief Generator**: Easy-to-use form for generating research briefs
+- **📊 History**: View and manage previous research briefs
+- **⚙️ Settings**: Configure backend connection and system settings
+
+### Quick Frontend Start
+
+```bash
+# Start both backend and frontend
+python start_app.py
+
+# Or start frontend only (if backend is already running)
+cd frontend
+npm run dev
+```
+
+The frontend will be available at: **http://localhost:3000**
+
 ## 🎯 Problem Statement and Objective
 
 Traditional research tools often lack context awareness and produce isolated results. This system addresses this by:
@@ -42,6 +64,51 @@ graph TD
 4. **Per-Source Summarizer**: Summarizes individual sources
 5. **Synthesizer**: Combines all sources into final brief
 6. **Error Handler**: Manages errors gracefully
+
+## 🎨 Frontend Features
+
+### Next.js Interface
+
+The frontend provides a modern, responsive interface with the following features:
+
+#### 📊 Dashboard
+- **Real-time Metrics**: Total briefs, execution times, sources used, cost estimates
+- **Activity Timeline**: Visual timeline of recent research topics
+- **Backend Status**: Live connection status with the backend
+- **Interactive Charts**: Plotly-powered visualizations
+
+#### 💬 Chat Interface
+- **Interactive Chat**: Natural conversation with the research assistant
+- **Context Awareness**: Remembers previous conversations
+- **Quick Brief Generation**: Seamless transition from chat to brief generation
+- **Message History**: Persistent chat history during session
+
+#### 📋 Brief Generator
+- **Rich Text Input**: Detailed topic input with placeholders
+- **Depth Selection**: Shallow (3-5 sources), moderate (5-8 sources), deep (8-12 sources)
+- **Follow-up Queries**: Mark requests as follow-ups for context-aware processing
+- **Additional Context**: Optional specific requirements or focus areas
+- **Real-time Progress**: Live updates during brief generation
+
+#### 📊 History & Analytics
+- **Research History**: View all previously generated briefs
+- **Detailed Analytics**: Execution times, token usage, source counts
+- **Export Functionality**: Download briefs as JSON files
+- **Search and Filter**: Find specific briefs quickly
+
+#### ⚙️ Settings
+- **Backend Configuration**: Configure backend URL and connection
+- **System Information**: View available models and system status
+- **Data Management**: Clear chat and brief history
+- **User Preferences**: Customize the interface
+
+### UI/UX Design
+
+- **Modern Design**: Clean, professional interface with Tailwind CSS
+- **Responsive Layout**: Optimized for desktop and mobile devices
+- **Interactive Elements**: Hover effects, smooth transitions, intuitive navigation
+- **Color-coded Metrics**: Visual indicators for different data types
+- **Professional Components**: Heroicons, consistent spacing, and modern typography
 
 ## 🤖 Model and Tool Selection
 
@@ -92,6 +159,43 @@ class FinalBrief(BaseModel):
 - Python 3.11+
 - Azure OpenAI API access
 - Tavily API key
+
+### Complete Setup (Backend + Frontend)
+
+1. **Clone and setup**:
+   ```bash
+   git clone <repository-url>
+   cd Context-Aware-Research-Brief-Generator
+   ```
+
+2. **Install dependencies**:
+   ```bash
+   # Backend dependencies
+   cd backend
+   pip install -r requirements.txt
+   
+   # Frontend dependencies
+   cd ../frontend
+   npm install
+   ```
+
+3. **Configure environment**:
+   ```bash
+   cd ../backend
+   cp env.example .env
+   # Edit .env with your Azure OpenAI credentials
+   ```
+
+4. **Start the complete application**:
+   ```bash
+   # From the root directory
+   python start_app.py
+   ```
+
+5. **Access the application**:
+   - **Frontend**: http://localhost:3000
+   - **Backend API**: http://localhost:8000
+   - **API Docs**: http://localhost:8000/docs
 
 ### Installation
 

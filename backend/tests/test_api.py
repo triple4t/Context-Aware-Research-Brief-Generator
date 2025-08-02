@@ -191,6 +191,7 @@ class TestHistoryEndpoint:
         # Mock storage response
         mock_storage.get_user_history.return_value = [
             {
+                "id": 1,
                 "topic": "test topic",
                 "executive_summary": "Test summary with sufficient length",
                 "generated_at": "2024-01-01T00:00:00",
