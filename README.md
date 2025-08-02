@@ -2,36 +2,7 @@
 
 A production-grade research assistant system that generates structured, evidence-linked research briefs using LangGraph and LangChain with Azure OpenAI. The system supports follow-up queries by summarizing prior user interactions and incorporating this context into subsequent outputs.
 
-## 🎨 Frontend (Local Development)
 
-A modern Next.js frontend with Tailwind CSS provides a professional interface for:
-- **📊 Dashboard**: Real-time metrics and activity visualization
-- **💬 Chat**: Interactive conversation with the research assistant
-- **📋 Brief Generator**: Easy-to-use form for generating research briefs
-- **📊 History**: View and manage previous research briefs
-- **⚙️ Settings**: Configure backend connection and system settings
-
-> **Note**: The frontend is configured for local development only and is not tracked in git. This allows for flexible frontend development without affecting the core backend repository.
-
-### Quick Frontend Start
-
-```bash
-# Start frontend for local development
-cd frontend
-npm install  # First time only
-npm run dev
-```
-
-The frontend will be available at: **http://localhost:3000**
-
-### Frontend Development
-
-The frontend directory contains:
-- **Next.js 15.4.5** with TypeScript
-- **Tailwind CSS** for styling
-- **Heroicons** for icons
-- **Local development** configuration
-- **Type-safe** API integration with backend
 
 ## 🎯 Problem Statement and Objective
 
@@ -78,8 +49,8 @@ graph TD
 
 ```
 Context-Aware Research Brief Generator/
-├── backend/                    # Backend (tracked in git)
-│   ├── app/                   # Main application code
+├── backend/                    # Main application
+│   ├── app/                   # Core application code
 │   │   ├── cli.py            # Command-line interface
 │   │   ├── graph.py          # LangGraph workflow
 │   │   ├── nodes.py          # Processing nodes
@@ -88,60 +59,11 @@ Context-Aware Research Brief Generator/
 │   ├── tests/                # Test suite
 │   ├── requirements.txt      # Python dependencies
 │   └── README.md            # Backend documentation
-├── frontend/                  # Frontend (local development only)
-│   ├── src/                  # Next.js source code
-│   ├── package.json          # Node.js dependencies
-│   └── README.md            # Frontend documentation
 ├── .gitignore               # Git ignore rules
 └── README.md               # Main documentation
 ```
 
-> **Note**: The frontend directory is excluded from git tracking to allow for flexible local development without affecting the core backend repository.
 
-## 🎨 Frontend Features
-
-### Next.js Interface
-
-The frontend provides a modern, responsive interface with the following features:
-
-#### 📊 Dashboard
-- **Real-time Metrics**: Total briefs, execution times, sources used, cost estimates
-- **Activity Timeline**: Visual timeline of recent research topics
-- **Backend Status**: Live connection status with the backend
-- **Interactive Charts**: Plotly-powered visualizations
-
-#### 💬 Chat Interface
-- **Interactive Chat**: Natural conversation with the research assistant
-- **Context Awareness**: Remembers previous conversations
-- **Quick Brief Generation**: Seamless transition from chat to brief generation
-- **Message History**: Persistent chat history during session
-
-#### 📋 Brief Generator
-- **Rich Text Input**: Detailed topic input with placeholders
-- **Depth Selection**: Shallow (3-5 sources), moderate (5-8 sources), deep (8-12 sources)
-- **Follow-up Queries**: Mark requests as follow-ups for context-aware processing
-- **Additional Context**: Optional specific requirements or focus areas
-- **Real-time Progress**: Live updates during brief generation
-
-#### 📊 History & Analytics
-- **Research History**: View all previously generated briefs
-- **Detailed Analytics**: Execution times, token usage, source counts
-- **Export Functionality**: Download briefs as JSON files
-- **Search and Filter**: Find specific briefs quickly
-
-#### ⚙️ Settings
-- **Backend Configuration**: Configure backend URL and connection
-- **System Information**: View available models and system status
-- **Data Management**: Clear chat and brief history
-- **User Preferences**: Customize the interface
-
-### UI/UX Design
-
-- **Modern Design**: Clean, professional interface with Tailwind CSS
-- **Responsive Layout**: Optimized for desktop and mobile devices
-- **Interactive Elements**: Hover effects, smooth transitions, intuitive navigation
-- **Color-coded Metrics**: Visual indicators for different data types
-- **Professional Components**: Heroicons, consistent spacing, and modern typography
 
 ## 🤖 Model and Tool Selection
 
@@ -192,7 +114,6 @@ class FinalBrief(BaseModel):
 - Python 3.11+
 - Azure OpenAI API access
 - Tavily API key
-- Node.js 18+ (for frontend development)
 
 ### Backend Setup
 
@@ -224,21 +145,7 @@ class FinalBrief(BaseModel):
    - **API Docs**: http://localhost:8000/docs
    - **CLI**: `python -m app.cli generate --topic "your topic"`
 
-### Frontend Development (Optional)
 
-1. **Install frontend dependencies**:
-   ```bash
-   cd frontend
-   npm install
-   ```
-
-2. **Start frontend development server**:
-   ```bash
-   npm run dev
-   ```
-
-3. **Access the frontend**:
-   - **Frontend**: http://localhost:3000
 
 ### Backend Installation
 
