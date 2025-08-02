@@ -224,7 +224,7 @@ export default function BriefGenerator() {
                 <div className="bg-gradient-to-r from-indigo-100 to-purple-100 rounded-2xl p-8">
                   <DocumentTextIcon className="h-16 w-16 mx-auto text-gray-300 mb-4" />
                   <h3 className="text-xl font-semibold text-gray-700 mb-2">No brief generated yet</h3>
-                  <p className="text-gray-600">Fill out the form and click "Generate Research Brief" to get started</p>
+                  <p className="text-gray-600">Fill out the form and click &quot;Generate Research Brief&quot; to get started</p>
                 </div>
               </div>
             )}
@@ -310,9 +310,9 @@ export default function BriefGenerator() {
                       <div className="flex items-start justify-between mb-4">
                         <div className="flex-1">
                           <h4 className="font-semibold text-gray-900 mb-2">{ref.title}</h4>
-                          <a 
-                            href={ref.url} 
-                            target="_blank" 
+                          <a
+                            href={ref.url}
+                            target="_blank"
                             rel="noopener noreferrer"
                             className="text-sm text-indigo-600 mb-2 hover:text-indigo-800 underline break-all"
                           >

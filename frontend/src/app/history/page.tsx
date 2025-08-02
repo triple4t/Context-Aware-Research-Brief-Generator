@@ -85,7 +85,7 @@ export default function History() {
               <div className="bg-gradient-to-r from-indigo-100 to-purple-100 rounded-2xl p-8 max-w-md mx-auto">
                 <DocumentTextIcon className="h-16 w-16 mx-auto text-gray-300 mb-4" />
                 <h3 className="text-xl font-semibold text-gray-700 mb-2">No research history</h3>
-                <p className="text-gray-600 mb-6">You haven't generated any research briefs yet.</p>
+                <p className="text-gray-600 mb-6">You haven&apos;t generated any research briefs yet.</p>
                 <a
                   href="/brief"
                   className="inline-flex items-center px-6 py-3 border border-transparent text-sm font-medium rounded-xl shadow-lg text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200"

@@ -43,8 +43,8 @@ export interface UserHistory {
     synthesis: string;
     key_insights: string[];
     references: Reference[];
-    context_used?: any;
-    metadata?: any;
+    context_used?: Record<string, unknown>;
+    metadata?: Record<string, unknown>;
   }>;
 }
 
